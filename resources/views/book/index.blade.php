@@ -43,25 +43,34 @@
                 <td>{{ $item -> author }}</td>
                 <td>{{ $item -> published_year }}</td>
                 <td>
-                    <button>Edit</button>
-                    <button>Delete</button>
+                    <button>
+                        <a href="{{ route('book.edit',['id'=>$item->id]) }}">Edit</a>
+                    </button>
+                    <form action="{{ route('book.delete',['id'=>$item->id]) }}" method="post">
+                        @csrf
+                        @method('delete')
+                        <button>Delete</button>
+                    </form>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    <h3>Add</h3>
-    <form action="{{ route('book.store') }}" method="post">
+    <h3>{{ isset($bookDetail)?'Edit':'Add'}}</h3>
+    <form action="{{ isset($bookDetail)?route('book.update',['id'=>$bookDetail->id]):route('book.store') }}" method="post">
         @csrf
+        @if (isset($bookDetail))
+            @method('PUT')
+        @endif
         <label for="title">Title:</label><br>
-        <input type="text" id="title" name="title" required><br><br>
+        <input type="text" id="title" name="title" value="{{ old('title',$bookDetail->title??'') }}" required><br><br>
 
         <label for="author">Author:</label><br>
-        <input type="text" id="author" name="author" required><br><br>
+        <input type="text" id="author" name="author" value="{{ old('author',$bookDetail->author??'') }}" required><br><br>
 
         <label for="published_year">Published Year:</label><br>
-        <input type="number" id="published_year" name="published_year" min="1900" max="2099" required><br><br>
+        <input type="number" id="published_year" name="published_year" min="1900" max="2099" value="{{ old('published_year',$bookDetail->published_year??'') }}" required><br><br>
 
         <input type="submit" value="Add Book">
     </form>
